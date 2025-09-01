@@ -30,7 +30,8 @@ class Bomber3DGame {
     // Renderer
     this.renderer = new THREE.WebGLRenderer({ antialias: true })
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
-    this.renderer.setSize(window.innerWidth, window.innerHeight)
+    // 使用更精確的尺寸計算，避免超出瀏覽器範圍
+    this.renderer.setSize(document.documentElement.clientWidth, document.documentElement.clientHeight)
     this.renderer.shadowMap.enabled = true
     container.appendChild(this.renderer.domElement)
 
@@ -40,14 +41,18 @@ class Bomber3DGame {
 
     // Camera
     this.camera = new THREE.PerspectiveCamera(
-      60,
-      window.innerWidth / window.innerHeight,
+      45, // 降低視角從60度到45度，減少視野範圍，避免場景超出視窗
+      document.documentElement.clientWidth / document.documentElement.clientHeight,
       0.1,
-      100
+      200 // 增加遠裁剪面距離，確保遠距離物件不會被裁切
     )
     const half = (this.gridSize * this.cellSize) / 2
-    this.camera.position.set(half, half * 1.2 + 5, half + 6)
+    // 調整攝影機位置，確保整個場景都在視野內且不會超出視窗
+    this.camera.position.set(half, half * 1.8 + 10, half + 10)
     this.camera.lookAt(half, 0, half)
+    
+    // 計算並設定最佳的攝影機視野
+    this.adjustCameraForViewport()
 
     // Lights
     const ambient = new THREE.AmbientLight(0xffffff, 0.6)
@@ -204,11 +209,25 @@ class Bomber3DGame {
   }
 
   private onResize() {
-    const width = Math.max(1, Math.floor(window.innerWidth))
-    const height = Math.max(1, Math.floor(window.innerHeight))
-    this.renderer.setSize(width, height)
-    this.camera.aspect = width / height
+    // 使用更精確的尺寸計算，避免超出瀏覽器範圍
+    const width = Math.max(1, Math.floor(document.documentElement.clientWidth))
+    const height = Math.max(1, Math.floor(document.documentElement.clientHeight))
+    
+    // 確保尺寸不會超出瀏覽器範圍
+    const maxWidth = Math.min(width, window.screen.width)
+    const maxHeight = Math.min(height, window.screen.height)
+    
+    this.renderer.setSize(maxWidth, maxHeight)
+    this.camera.aspect = maxWidth / maxHeight
     this.camera.updateProjectionMatrix()
+    
+    // 重新計算相機位置以適應新的視窗尺寸
+    const half = (this.gridSize * this.cellSize) / 2
+    this.camera.position.set(half, half * 1.8 + 10, half + 10)
+    this.camera.lookAt(half, 0, half)
+    
+    // 重新調整攝影機以適應新的視窗
+    this.adjustCameraForViewport()
   }
 
   private placeBomb() {
@@ -333,6 +352,36 @@ class Bomber3DGame {
         }
       }
     }
+  }
+
+  private adjustCameraForViewport() {
+    // 根據視窗大小和場景大小調整攝影機設定
+    const viewportWidth = document.documentElement.clientWidth
+    const viewportHeight = document.documentElement.clientHeight
+    const aspectRatio = viewportWidth / viewportHeight
+    
+    // 計算場景的邊界框
+    const sceneSize = this.gridSize * this.cellSize
+    const sceneHalfSize = sceneSize / 2
+    
+    // 根據視窗比例調整攝影機位置
+    if (aspectRatio > 1) {
+      // 寬螢幕：調整Z位置
+      const optimalZ = sceneHalfSize + (sceneHalfSize / Math.tan((this.camera.fov * Math.PI / 180) / 2))
+      this.camera.position.z = Math.max(optimalZ, sceneHalfSize + 8)
+    } else {
+      // 高螢幕：調整Y位置
+      const optimalY = sceneHalfSize + (sceneHalfSize / Math.tan((this.camera.fov * Math.PI / 180) / 2))
+      this.camera.position.y = Math.max(optimalY, sceneHalfSize + 10)
+    }
+    
+    // 確保攝影機不會太靠近場景
+    this.camera.position.y = Math.max(this.camera.position.y, 8)
+    this.camera.position.z = Math.max(this.camera.position.z, 6)
+    
+    // 更新攝影機矩陣
+    this.camera.lookAt(sceneHalfSize, 0, sceneHalfSize)
+    this.camera.updateProjectionMatrix()
   }
 }
 
