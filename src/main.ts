@@ -30,7 +30,7 @@ class Bomber3DGame {
     // Renderer
     this.renderer = new THREE.WebGLRenderer({ antialias: true })
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
-    this.renderer.setSize(container.clientWidth, container.clientHeight)
+    this.renderer.setSize(window.innerWidth, window.innerHeight)
     this.renderer.shadowMap.enabled = true
     container.appendChild(this.renderer.domElement)
 
@@ -41,7 +41,7 @@ class Bomber3DGame {
     // Camera
     this.camera = new THREE.PerspectiveCamera(
       60,
-      container.clientWidth / container.clientHeight,
+      window.innerWidth / window.innerHeight,
       0.1,
       100
     )
@@ -134,10 +134,13 @@ class Bomber3DGame {
       }
     })
     window.addEventListener('keyup', (e) => (this.keys[e.key.toLowerCase()] = false))
-    window.addEventListener('resize', () => this.onResize(container))
+    window.addEventListener('resize', () => this.onResize())
 
     // Clock and start
     this.clock = new THREE.Clock()
+    // Ensure correct initial sizing after layout stabilizes
+    this.onResize()
+    requestAnimationFrame(() => this.onResize())
     this.animate()
   }
 
@@ -200,9 +203,11 @@ class Bomber3DGame {
     requestAnimationFrame(this.animate)
   }
 
-  private onResize(container: HTMLElement) {
-    this.renderer.setSize(container.clientWidth, container.clientHeight)
-    this.camera.aspect = container.clientWidth / container.clientHeight
+  private onResize() {
+    const width = Math.max(1, Math.floor(window.innerWidth))
+    const height = Math.max(1, Math.floor(window.innerHeight))
+    this.renderer.setSize(width, height)
+    this.camera.aspect = width / height
     this.camera.updateProjectionMatrix()
   }
 
