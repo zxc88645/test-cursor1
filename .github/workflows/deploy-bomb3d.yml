@@ -21,20 +21,22 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version: '20'
           cache: 'npm'
 
       - name: Install dependencies
         run: npm ci
 
       - name: Build
-        run: |
-          export REPO_NAME="${GITHUB_REPOSITORY#*/}"
-          export BASE_PATH="/${REPO_NAME}/"
-          npm run build
+        env:
+          BASE_PATH: "/${{ github.event.repository.name }}/"
+        run: npm run build
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
