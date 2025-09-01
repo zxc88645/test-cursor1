@@ -2,7 +2,7 @@ name: Deploy Bomber 3D to gh-pages
 
 on:
   push:
-    branches: [bomb3d-game]
+    branches: [main]
   workflow_dispatch:
 
 permissions:
