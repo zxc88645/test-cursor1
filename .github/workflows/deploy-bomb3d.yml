@@ -1,4 +1,4 @@
-name: Deploy Bomber 3D to gh-pages
+name: Deploy main to gh-pages
 
 on:
   push:
