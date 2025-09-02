@@ -3,12 +3,12 @@ import { ArtResourceManager } from '../art/ArtResourceManager'
 import { ArtSettingsPanel } from '../ui/ArtSettingsPanel'
 
 export class ArtSystemExample {
-  private scene: THREE.Scene
-  private renderer: THREE.WebGLRenderer
-  private camera: THREE.Camera
-  private artManager: ArtResourceManager
-  private settingsPanel: ArtSettingsPanel
-  private clock: THREE.Clock
+  private scene!: THREE.Scene
+  private renderer!: THREE.WebGLRenderer
+  private camera!: THREE.PerspectiveCamera
+  private artManager!: ArtResourceManager
+  private settingsPanel!: ArtSettingsPanel
+  private clock!: THREE.Clock
   private meshes: THREE.Mesh[] = []
 
   constructor(container: HTMLElement) {
@@ -153,13 +153,17 @@ export class ArtSystemExample {
 
     // 添加發光效果
     const glowGeometry = new THREE.SphereGeometry(0.6, 32, 32)
-    const glowMaterial = this.artManager.getMaterialFactory()?.createGlowMaterial(0x6ee7ff, 0.3)
-    if (glowMaterial) {
-      const glow = new THREE.Mesh(glowGeometry, glowMaterial)
-      glow.position.copy(player.position)
-      this.scene.add(glow)
-      this.meshes.push(glow)
-    }
+    const glowMaterial = new THREE.MeshStandardMaterial({
+      color: 0x6ee7ff,
+      emissive: 0x6ee7ff,
+      emissiveIntensity: 0.3,
+      transparent: true,
+      opacity: 0.8
+    })
+    const glow = new THREE.Mesh(glowGeometry, glowMaterial)
+    glow.position.copy(player.position)
+    this.scene.add(glow)
+    this.meshes.push(glow)
   }
 
   private createBomb(): void {
@@ -174,13 +178,11 @@ export class ArtSystemExample {
 
     // 添加引信
     const fuseGeometry = new THREE.CylinderGeometry(0.05, 0.05, 0.4)
-    const fuseMaterial = this.artManager.getMaterialFactory()?.createMaterial('BOMB', undefined, 0x8b4513)
-    if (fuseMaterial) {
-      const fuse = new THREE.Mesh(fuseGeometry, fuseMaterial)
-      fuse.position.set(5, 0.7, 0)
-      this.scene.add(fuse)
-      this.meshes.push(fuse)
-    }
+    const fuseMaterial = new THREE.MeshStandardMaterial({ color: 0x8b4513 })
+    const fuse = new THREE.Mesh(fuseGeometry, fuseMaterial)
+    fuse.position.set(5, 0.7, 0)
+    this.scene.add(fuse)
+    this.meshes.push(fuse)
   }
 
   private createWalls(): void {
@@ -231,18 +233,12 @@ export class ArtSystemExample {
       pulseIntensity: 0.5
     })
 
-    // 創建移動光源
-    this.artManager.createMovingLight(
-      'moving1',
-      new THREE.Vector3(-5, 2, -5),
-      new THREE.Vector3(5, 2, -5),
-      4.0,
-      {
-        color: 0x4ecdc4,
-        intensity: 1.5,
-        distance: 6
-      }
-    )
+    // 創建動態光源
+    this.artManager.addDynamicLight('moving1', new THREE.Vector3(-5, 2, -5), {
+      color: 0x4ecdc4,
+      intensity: 1.5,
+      distance: 6
+    })
   }
 
   private setupEventListeners(): void {

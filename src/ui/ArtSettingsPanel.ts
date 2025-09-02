@@ -1,7 +1,7 @@
-import { ArtResourceManager, ArtResourceConfig } from '../art/ArtResourceManager'
+import { ArtResourceManager } from '../art/ArtResourceManager'
 
 export class ArtSettingsPanel {
-  private container: HTMLDivElement
+  private container!: HTMLDivElement
   private artManager: ArtResourceManager
   private isVisible: boolean = false
 
@@ -475,21 +475,21 @@ export class ArtSettingsPanel {
   private setQualityPreset(quality: 'low' | 'medium' | 'high'): void {
     const presets = {
       low: {
-        textureQuality: 'low',
-        particleCount: 'low',
-        shadowQuality: 'low',
+        textureQuality: 'low' as const,
+        particleCount: 'low' as const,
+        shadowQuality: 'low' as const,
         enablePostProcessing: false
       },
       medium: {
-        textureQuality: 'medium',
-        particleCount: 'medium',
-        shadowQuality: 'medium',
+        textureQuality: 'medium' as const,
+        particleCount: 'medium' as const,
+        shadowQuality: 'medium' as const,
         enablePostProcessing: true
       },
       high: {
-        textureQuality: 'high',
-        particleCount: 'high',
-        shadowQuality: 'high',
+        textureQuality: 'high' as const,
+        particleCount: 'high' as const,
+        shadowQuality: 'high' as const,
         enablePostProcessing: true
       }
     }

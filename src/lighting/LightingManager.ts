@@ -12,8 +12,8 @@ export interface LightConfig {
 export class LightingManager {
   private scene: THREE.Scene
   private lights: Map<string, THREE.Light> = new Map()
-  private ambientLight: THREE.AmbientLight
-  private directionalLight: THREE.DirectionalLight
+  private ambientLight!: THREE.AmbientLight
+  private directionalLight!: THREE.DirectionalLight
 
   constructor(scene: THREE.Scene) {
     this.scene = scene
@@ -335,7 +335,7 @@ export class LightingManager {
   }
 
   // 更新光照
-  update(deltaTime: number): void {
+  update(_deltaTime: number): void {
     // 可以在這裡添加動態光照更新邏輯
   }
 }

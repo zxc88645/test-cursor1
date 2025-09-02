@@ -9,7 +9,7 @@ export interface ParticleConfig {
   gravity: number
   size: number
   color: THREE.ColorRepresentation
-  type: 'spark' | 'smoke' | 'explosion' | 'fire'
+  type: 'spark' | 'smoke' | 'explosion'
 }
 
 export class ParticleSystem {
@@ -90,7 +90,7 @@ export class ParticleSystem {
       gravity: -5.0,
       size: 0.4,
       color: 0xffb703,
-      type: 'fire'
+      type: 'explosion'
     }
 
     const finalConfig = { ...defaultConfig, ...config }
@@ -100,7 +100,7 @@ export class ParticleSystem {
   // 創建通用粒子
   private createParticles(position: THREE.Vector3, config: ParticleConfig): void {
     for (let i = 0; i < config.count; i++) {
-      const material = this.materialFactory.createParticleMaterial(config.type)
+      const material = this.materialFactory.createParticleMaterial(config.type) as THREE.SpriteMaterial
       const sprite = new THREE.Sprite(material)
       
       // 隨機方向
@@ -116,8 +116,10 @@ export class ParticleSystem {
       sprite.position.copy(position)
       sprite.scale.setScalar(config.size * (0.7 + Math.random() * 0.6))
       
-      // 隨機旋轉
-      sprite.rotation = Math.random() * Math.PI * 2
+      // 隨機旋轉 - 使用 material.rotation 而不是 sprite.rotation
+      if (sprite.material instanceof THREE.SpriteMaterial) {
+        sprite.material.rotation = Math.random() * Math.PI * 2
+      }
 
       this.scene.add(sprite)
       this.particles.push(sprite)
@@ -134,7 +136,7 @@ export class ParticleSystem {
   // 創建方向性粒子
   private createDirectionalParticles(position: THREE.Vector3, direction: THREE.Vector3, config: ParticleConfig): void {
     for (let i = 0; i < config.count; i++) {
-      const material = this.materialFactory.createParticleMaterial(config.type)
+      const material = this.materialFactory.createParticleMaterial(config.type) as THREE.SpriteMaterial
       const sprite = new THREE.Sprite(material)
       
       // 基於方向的角度偏移
@@ -150,7 +152,9 @@ export class ParticleSystem {
 
       sprite.position.copy(position)
       sprite.scale.setScalar(config.size * (0.7 + Math.random() * 0.6))
-      sprite.rotation = Math.random() * Math.PI * 2
+      if (sprite.material instanceof THREE.SpriteMaterial) {
+        sprite.material.rotation = Math.random() * Math.PI * 2
+      }
 
       this.scene.add(sprite)
       this.particles.push(sprite)
@@ -226,11 +230,10 @@ export class ParticleSystem {
 
     const finalConfig = { ...defaultConfig, ...config }
     const direction = new THREE.Vector3().subVectors(endPosition, startPosition)
-    const distance = direction.length()
     direction.normalize()
 
     for (let i = 0; i < finalConfig.count; i++) {
-      const material = this.materialFactory.createParticleMaterial(finalConfig.type)
+      const material = this.materialFactory.createParticleMaterial(finalConfig.type) as THREE.SpriteMaterial
       const sprite = new THREE.Sprite(material)
       
       // 沿著軌跡線分布
@@ -246,7 +249,9 @@ export class ParticleSystem {
 
       sprite.position.copy(position)
       sprite.scale.setScalar(finalConfig.size * (0.7 + Math.random() * 0.6))
-      sprite.rotation = Math.random() * Math.PI * 2
+      if (sprite.material instanceof THREE.SpriteMaterial) {
+        sprite.material.rotation = Math.random() * Math.PI * 2
+      }
 
       this.scene.add(sprite)
       this.particles.push(sprite)

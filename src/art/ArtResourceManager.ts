@@ -3,7 +3,7 @@ import { MaterialFactory } from '../materials/MaterialFactory'
 import { ParticleSystem } from '../effects/ParticleSystem'
 import { LightingManager } from '../lighting/LightingManager'
 import { PostProcessingManager } from '../effects/PostProcessingManager'
-import { loadAllTextures, TEXTURE_PATHS } from '../textures'
+import { loadAllTextures } from '../textures'
 
 export interface ArtResourceConfig {
   enableTextures: boolean
@@ -20,10 +20,10 @@ export class ArtResourceManager {
   private renderer: THREE.WebGLRenderer
   private camera: THREE.Camera
   
-  private materialFactory: MaterialFactory
-  private particleSystem: ParticleSystem
-  private lightingManager: LightingManager
-  private postProcessingManager: PostProcessingManager
+  private materialFactory!: MaterialFactory
+  private particleSystem!: ParticleSystem
+  private lightingManager!: LightingManager
+  private postProcessingManager!: PostProcessingManager
   
   private config: ArtResourceConfig
   private isInitialized: boolean = false
@@ -110,13 +110,6 @@ export class ArtResourceManager {
   private setupLightingQuality(): void {
     if (!this.lightingManager) return
 
-    const shadowConfig = {
-      low: { mapSize: 512, near: 0.5, far: 50 },
-      medium: { mapSize: 1024, near: 0.5, far: 50 },
-      high: { mapSize: 2048, near: 0.5, far: 50 }
-    }
-
-    const config = shadowConfig[this.config.shadowQuality]
     // 這裡可以根據質量設置調整光照參數
   }
 
@@ -124,18 +117,18 @@ export class ArtResourceManager {
   private getPostProcessingConfig() {
     const qualityConfig = {
       low: {
-        bloom: { enabled: false },
-        chromaticAberration: { enabled: false },
+        bloom: { enabled: false, threshold: 0.5, strength: 1.0, radius: 0.4 },
+        chromaticAberration: { enabled: false, offset: 0.003 },
         vignette: { enabled: true, offset: 1.0, darkness: 0.3 },
-        filmGrain: { enabled: false },
-        motionBlur: { enabled: false }
+        filmGrain: { enabled: false, intensity: 0.1 },
+        motionBlur: { enabled: false, samples: 16 }
       },
       medium: {
         bloom: { enabled: true, threshold: 0.6, strength: 1.0, radius: 0.4 },
-        chromaticAberration: { enabled: false },
+        chromaticAberration: { enabled: false, offset: 0.003 },
         vignette: { enabled: true, offset: 1.0, darkness: 0.4 },
         filmGrain: { enabled: true, intensity: 0.05 },
-        motionBlur: { enabled: false }
+        motionBlur: { enabled: false, samples: 16 }
       },
       high: {
         bloom: { enabled: true, threshold: 0.5, strength: 1.5, radius: 0.5 },

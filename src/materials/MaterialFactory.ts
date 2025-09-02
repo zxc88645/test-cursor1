@@ -262,10 +262,12 @@ export class MaterialFactory {
   // 清理材質緩存
   dispose(): void {
     this.materialCache.forEach(material => {
-      if (material.map) material.map.dispose()
-      if (material.normalMap) material.normalMap.dispose()
-      if (material.roughnessMap) material.roughnessMap.dispose()
-      if (material.metalnessMap) material.metalnessMap.dispose()
+      if (material instanceof THREE.MeshStandardMaterial) {
+        if (material.map) material.map.dispose()
+        if (material.normalMap) material.normalMap.dispose()
+        if (material.roughnessMap) material.roughnessMap.dispose()
+        if (material.metalnessMap) material.metalnessMap.dispose()
+      }
       material.dispose()
     })
     this.materialCache.clear()
