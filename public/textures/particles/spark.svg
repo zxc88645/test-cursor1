@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="128" height="128" xmlns="http://www.w3.org/2000/svg">
+    
+    <defs>
+        <radialGradient id="sparkGrad">
+            <stop offset="0%" stop-color="#FFFFFF"/>
+            <stop offset="100%" stop-color="#FFFF00"/>
+        </radialGradient>
+    </defs>
+    <circle cx="64" cy="64" r="32" fill="url(#sparkGrad)"/>
+    <circle cx="64" cy="64" r="16" fill="#FFFFFF"/>
+
+</svg>

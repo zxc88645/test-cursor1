@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="512" height="512" xmlns="http://www.w3.org/2000/svg">
+    
+    <defs>
+        <pattern id="bomb" patternUnits="userSpaceOnUse" width="256" height="256">
+            <circle cx="128" cy="128" r="100" fill="#2F2F2F"/>
+            <circle cx="128" cy="128" r="80" fill="#000000"/>
+            <rect x="118" y="28" width="20" height="40" fill="#8B4513"/>
+            <circle cx="128" cy="48" r="8" fill="#FF4500"/>
+        </pattern>
+    </defs>
+    <rect width="512" height="512" fill="url(#bomb)"/>
+
+</svg>

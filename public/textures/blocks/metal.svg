@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="512" height="512" xmlns="http://www.w3.org/2000/svg">
+    
+    <defs>
+        <pattern id="metal" patternUnits="userSpaceOnUse" width="128" height="128">
+            <rect width="128" height="128" fill="#708090"/>
+            <rect x="0" y="0" width="128" height="2" fill="#FFFFFF"/>
+            <rect x="0" y="126" width="128" height="2" fill="#000000"/>
+            <rect x="0" y="0" width="2" height="128" fill="#FFFFFF"/>
+            <rect x="126" y="0" width="2" height="128" fill="#000000"/>
+        </pattern>
+    </defs>
+    <rect width="512" height="512" fill="url(#metal)"/>
+
+</svg>

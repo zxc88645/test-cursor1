@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="256" height="256" xmlns="http://www.w3.org/2000/svg">
+    
+    <defs>
+        <radialGradient id="explosionGrad">
+            <stop offset="0%" stop-color="#FFFFFF"/>
+            <stop offset="30%" stop-color="#FFFF00"/>
+            <stop offset="60%" stop-color="#FF4500"/>
+            <stop offset="100%" stop-color="#8B0000"/>
+        </radialGradient>
+    </defs>
+    <circle cx="128" cy="128" r="120" fill="url(#explosionGrad)"/>
+    <circle cx="128" cy="128" r="80" fill="#FFFF00"/>
+
+</svg>

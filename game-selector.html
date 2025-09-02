@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎮 3D轟炸機遊戲 - 選擇版本</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0b0f1a 0%, #1a2235 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            text-align: center;
+            max-width: 800px;
+            padding: 40px 20px;
+        }
+
+        .title {
+            font-size: 3.5rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, #00ff88, #00cc66);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 30px rgba(0, 255, 136, 0.3);
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: #cccccc;
+            margin-bottom: 3rem;
+            opacity: 0.9;
+        }
+
+        .game-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .game-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(0, 255, 136, 0.3);
+            border-radius: 15px;
+            padding: 2rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .game-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 255, 136, 0.1), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .game-card:hover::before {
+            left: 100%;
+        }
+
+        .game-card:hover {
+            border-color: #00ff88;
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 255, 136, 0.2);
+        }
+
+        .game-card.recommended {
+            border-color: #00ff88;
+            background: rgba(0, 255, 136, 0.1);
+        }
+
+        .game-card.recommended::after {
+            content: '推薦';
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: #00ff88;
+            color: #000;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .game-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .game-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            color: #00ff88;
+        }
+
+        .game-description {
+            color: #cccccc;
+            margin-bottom: 1rem;
+            line-height: 1.5;
+        }
+
+        .game-features {
+            list-style: none;
+            margin-bottom: 1.5rem;
+        }
+
+        .game-features li {
+            color: #aaaaaa;
+            margin-bottom: 0.3rem;
+            font-size: 0.9rem;
+        }
+
+        .game-features li::before {
+            content: '✓ ';
+            color: #00ff88;
+            font-weight: bold;
+        }
+
+        .play-button {
+            background: linear-gradient(45deg, #00ff88, #00cc66);
+            color: #000;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .play-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0, 255, 136, 0.4);
+        }
+
+        .tools-section {
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .tools-title {
+            font-size: 1.5rem;
+            color: #00ff88;
+            margin-bottom: 1rem;
+        }
+
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .tool-link {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 1rem;
+            text-decoration: none;
+            color: #cccccc;
+            transition: all 0.3s ease;
+        }
+
+        .tool-link:hover {
+            border-color: #00ff88;
+            color: #00ff88;
+            transform: translateY(-2px);
+        }
+
+        .footer {
+            margin-top: 3rem;
+            color: #888888;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            .title {
+                font-size: 2.5rem;
+            }
+            
+            .game-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="title">🎮 3D轟炸機遊戲</h1>
+        <p class="subtitle">選擇您想要遊玩的遊戲版本</p>
+
+        <div class="game-grid">
+            <!-- 主遊戲版本 -->
+            <div class="game-card recommended">
+                <div class="game-icon">🎮</div>
+                <h2 class="game-title">3D轟炸機遊戲</h2>
+                <p class="game-description">完整的3D轟炸機遊戲，包含紋理系統、載入進度條和高級光照效果。</p>
+                <ul class="game-features">
+                    <li>載入進度條</li>
+                    <li>紋理材質系統</li>
+                    <li>高級光照效果</li>
+                    <li>粒子特效</li>
+                    <li>中文界面</li>
+                </ul>
+                <a href="index.html" class="play-button">開始遊戲</a>
+            </div>
+        </div>
+
+        <div class="tools-section">
+            <h3 class="tools-title">🛠️ 開發工具</h3>
+            <div class="tools-grid">
+                <a href="texture-test.html" class="tool-link">紋理系統測試</a>
+                <a href="simple-texture-test.html" class="tool-link">簡單紋理測試</a>
+                <a href="texture-preview.html" class="tool-link">紋理資源預覽</a>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>使用 Three.js + TypeScript 開發 | 支持現代瀏覽器</p>
+        </div>
+    </div>
+</body>
+</html>

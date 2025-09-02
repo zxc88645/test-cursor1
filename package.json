@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "vite --host",
     "build": "tsc && vite build",
-    "preview": "vite preview --host"
+    "preview": "vite preview --host",
+    "game": "node dev-server.js",
+    "textures": "node scripts/generate-textures.js"
   },
   "devDependencies": {
     "typescript": "~5.8.3",

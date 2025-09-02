@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>紋理系統測試 - 3D轟炸機遊戲</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background: #1a1a1a;
+            color: #ffffff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #00ff88;
+            margin-bottom: 30px;
+        }
+        
+        .test-section {
+            background: #2a2a2a;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .test-section h3 {
+            color: #00ff88;
+            margin-top: 0;
+        }
+        
+        .test-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .test-item {
+            background: #333;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+        }
+        
+        .test-item img {
+            width: 100px;
+            height: 100px;
+            border: 2px solid #555;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+        
+        .status {
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .status.success {
+            background: #00ff88;
+            color: #000;
+        }
+        
+        .status.error {
+            background: #ff4444;
+            color: #fff;
+        }
+        
+        .status.loading {
+            background: #ffaa00;
+            color: #000;
+        }
+        
+        .three-container {
+            width: 100%;
+            height: 400px;
+            border: 2px solid #444;
+            border-radius: 8px;
+            margin: 20px 0;
+            background: #000;
+        }
+        
+        .controls {
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .btn {
+            background: #00ff88;
+            color: #000;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            margin: 0 10px;
+        }
+        
+        .btn:hover {
+            background: #00cc6a;
+        }
+        
+        .btn:disabled {
+            background: #666;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 紋理系統測試 - 3D轟炸機遊戲</h1>
+        
+        <div class="test-section">
+            <h3>📁 紋理文件檢查</h3>
+            <div class="test-grid" id="textureTestGrid">
+                <!-- 紋理測試項目將在這裡動態生成 -->
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h3>🎮 3D場景測試</h3>
+            <div class="three-container" id="threeContainer"></div>
+            <div class="controls">
+                <button class="btn" id="loadTexturesBtn">載入紋理</button>
+                <button class="btn" id="createSceneBtn" disabled>創建3D場景</button>
+                <button class="btn" id="resetBtn" disabled>重置場景</button>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h3>📊 測試結果</h3>
+            <div id="testResults">
+                <p>點擊"載入紋理"開始測試...</p>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import * as THREE from './node_modules/three/build/three.module.js';
+        
+        class TextureTester {
+            constructor() {
+                this.textures = {};
+                this.scene = null;
+                this.renderer = null;
+                this.camera = null;
+                this.meshes = [];
+                this.clock = new THREE.Clock();
+                
+                this.initializeUI();
+                this.bindEvents();
+            }
+            
+            initializeUI() {
+                this.createTextureTestGrid();
+            }
+            
+            createTextureTestGrid() {
+                const grid = document.getElementById('textureTestGrid');
+                const textureList = [
+                    { path: 'public/textures/ground/base.svg', name: '基礎地面', category: '地面' },
+                    { path: 'public/textures/ground/grass.svg', name: '草地', category: '地面' },
+                    { path: 'public/textures/ground/concrete.svg', name: '混凝土', category: '地面' },
+                    { path: 'public/textures/blocks/stone.svg', name: '石塊', category: '方塊' },
+                    { path: 'public/textures/blocks/metal.svg', name: '金屬', category: '方塊' },
+                    { path: 'public/textures/player/player.svg', name: '玩家', category: '角色' },
+                    { path: 'public/textures/bomb/bomb.svg', name: '炸彈', category: '道具' },
+                    { path: 'public/textures/particles/explosion.svg', name: '爆炸', category: '特效' }
+                ];
+                
+                grid.innerHTML = textureList.map(texture => `
+                    <div class="test-item">
+                        <img src="${texture.path}" alt="${texture.name}" onerror="this.style.display='none'">
+                        <div><strong>${texture.name}</strong></div>
+                        <div style="font-size: 12px; color: #aaa;">${texture.category}</div>
+                        <div class="status loading" id="status-${texture.path.replace(/[^a-zA-Z0-9]/g, '_')}">載入中...</div>
+                    </div>
+                `).join('');
+            }
+            
+            bindEvents() {
+                document.getElementById('loadTexturesBtn').addEventListener('click', () => this.loadAllTextures());
+                document.getElementById('createSceneBtn').addEventListener('click', () => this.create3DScene());
+                document.getElementById('resetBtn').addEventListener('click', () => this.resetScene());
+            }
+            
+            async loadAllTextures() {
+                const btn = document.getElementById('loadTexturesBtn');
+                btn.disabled = true;
+                btn.textContent = '載入中...';
+                
+                this.updateTestResults('開始載入紋理...');
+                
+                const textureLoader = new THREE.TextureLoader();
+                const texturePaths = [
+                    'public/textures/ground/base.svg',
+                    'public/textures/ground/grass.svg',
+                    'public/textures/ground/concrete.svg',
+                    'public/textures/blocks/stone.svg',
+                    'public/textures/blocks/metal.svg',
+                    'public/textures/player/player.svg',
+                    'public/textures/bomb/bomb.svg',
+                    'public/textures/particles/explosion.svg'
+                ];
+                
+                let loadedCount = 0;
+                let errorCount = 0;
+                
+                for (const path of texturePaths) {
+                    try {
+                        const texture = await this.loadTexture(textureLoader, path);
+                        this.textures[path] = texture;
+                        this.updateTextureStatus(path, 'success', '載入成功');
+                        loadedCount++;
+                    } catch (error) {
+                        this.updateTextureStatus(path, 'error', '載入失敗');
+                        errorCount++;
+                        console.error(`Failed to load texture: ${path}`, error);
+                    }
+                }
+                
+                this.updateTestResults(`紋理載入完成！成功: ${loadedCount}, 失敗: ${errorCount}`);
+                
+                if (loadedCount > 0) {
+                    document.getElementById('createSceneBtn').disabled = false;
+                    btn.textContent = '載入完成';
+                } else {
+                    btn.textContent = '載入紋理';
+                    btn.disabled = false;
+                }
+            }
+            
+            loadTexture(loader, path) {
+                return new Promise((resolve, reject) => {
+                    loader.load(
+                        path,
+                        (texture) => resolve(texture),
+                        undefined,
+                        (error) => reject(error)
+                    );
+                });
+            }
+            
+            updateTextureStatus(path, status, message) {
+                const statusId = `status-${path.replace(/[^a-zA-Z0-9]/g, '_')}`;
+                const statusElement = document.getElementById(statusId);
+                if (statusElement) {
+                    statusElement.className = `status ${status}`;
+                    statusElement.textContent = message;
+                }
+            }
+            
+            updateTestResults(message) {
+                const results = document.getElementById('testResults');
+                results.innerHTML = `<p>${message}</p>`;
+            }
+            
+            create3DScene() {
+                const container = document.getElementById('threeContainer');
+                
+                // 創建場景
+                this.scene = new THREE.Scene();
+                this.scene.background = new THREE.Color(0x0b0f1a);
+                
+                // 創建渲染器
+                this.renderer = new THREE.WebGLRenderer({ antialias: true });
+                this.renderer.setSize(container.clientWidth, container.clientHeight);
+                this.renderer.shadowMap.enabled = true;
+                container.appendChild(this.renderer.domElement);
+                
+                // 創建相機
+                this.camera = new THREE.PerspectiveCamera(
+                    75,
+                    container.clientWidth / container.clientHeight,
+                    0.1,
+                    1000
+                );
+                this.camera.position.set(0, 5, 10);
+                this.camera.lookAt(0, 0, 0);
+                
+                // 創建光照
+                const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+                this.scene.add(ambientLight);
+                
+                const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+                directionalLight.position.set(5, 10, 5);
+                directionalLight.castShadow = true;
+                this.scene.add(directionalLight);
+                
+                // 創建帶紋理的物件
+                this.createTexturedObjects();
+                
+                // 開始渲染
+                this.animate();
+                
+                document.getElementById('resetBtn').disabled = false;
+                this.updateTestResults('3D場景創建成功！使用紋理材質的物件已顯示。');
+            }
+            
+            createTexturedObjects() {
+                // 創建地面（使用基礎地面紋理）
+                if (this.textures['public/textures/ground/base.svg']) {
+                    const groundGeometry = new THREE.PlaneGeometry(10, 10);
+                    const groundMaterial = new THREE.MeshStandardMaterial({
+                        map: this.textures['public/textures/ground/base.svg'],
+                        roughness: 0.8,
+                        metalness: 0.2
+                    });
+                    const ground = new THREE.Mesh(groundGeometry, groundMaterial);
+                    ground.rotation.x = -Math.PI / 2;
+                    ground.receiveShadow = true;
+                    this.scene.add(ground);
+                    this.meshes.push(ground);
+                }
+                
+                // 創建方塊（使用石塊紋理）
+                if (this.textures['public/textures/blocks/stone.svg']) {
+                    const blockGeometry = new THREE.BoxGeometry(1, 1, 1);
+                    const blockMaterial = new THREE.MeshStandardMaterial({
+                        map: this.textures['public/textures/blocks/stone.svg'],
+                        roughness: 0.9,
+                        metalness: 0.1
+                    });
+                    const block = new THREE.Mesh(blockGeometry, blockMaterial);
+                    block.position.set(-2, 0.5, 0);
+                    block.castShadow = true;
+                    this.scene.add(block);
+                    this.meshes.push(block);
+                }
+                
+                // 創建玩家（使用玩家紋理）
+                if (this.textures['public/textures/player/player.svg']) {
+                    const playerGeometry = new THREE.SphereGeometry(0.5, 32, 32);
+                    const playerMaterial = new THREE.MeshStandardMaterial({
+                        map: this.textures['public/textures/player/player.svg'],
+                        roughness: 0.6,
+                        metalness: 0.3
+                    });
+                    const player = new THREE.Mesh(playerGeometry, playerMaterial);
+                    player.position.set(0, 0.5, 0);
+                    player.castShadow = true;
+                    this.scene.add(player);
+                    this.meshes.push(player);
+                }
+                
+                // 創建炸彈（使用炸彈紋理）
+                if (this.textures['public/textures/bomb/bomb.svg']) {
+                    const bombGeometry = new THREE.SphereGeometry(0.3, 32, 32);
+                    const bombMaterial = new THREE.MeshStandardMaterial({
+                        map: this.textures['public/textures/bomb/bomb.svg'],
+                        roughness: 0.8,
+                        metalness: 0.2
+                    });
+                    const bomb = new THREE.Mesh(bombGeometry, bombMaterial);
+                    bomb.position.set(2, 0.3, 0);
+                    bomb.castShadow = true;
+                    this.scene.add(bomb);
+                    this.meshes.push(bomb);
+                }
+            }
+            
+            animate() {
+                if (!this.renderer || !this.scene || !this.camera) return;
+                
+                requestAnimationFrame(() => this.animate());
+                
+                const delta = this.clock.getDelta();
+                
+                // 旋轉物件以展示紋理
+                this.meshes.forEach((mesh, index) => {
+                    mesh.rotation.y += delta * 0.5;
+                    if (index === 0) { // 地面不旋轉
+                        mesh.rotation.y = 0;
+                    }
+                });
+                
+                this.renderer.render(this.scene, this.camera);
+            }
+            
+            resetScene() {
+                if (this.renderer && this.renderer.domElement) {
+                    this.renderer.domElement.remove();
+                }
+                
+                this.scene = null;
+                this.renderer = null;
+                this.camera = null;
+                this.meshes = [];
+                
+                document.getElementById('createSceneBtn').disabled = false;
+                document.getElementById('resetBtn').disabled = true;
+                this.updateTestResults('場景已重置。');
+            }
+        }
+        
+        // 初始化測試器
+        new TextureTester();
+    </script>
+</body>
+</html>

@@ -1,6 +1,11 @@
 import { defineConfig } from 'vite'
 
 export default defineConfig({
-  base: '/test-cursor1/',
+  base: './',
+  server: {
+    port: 3000,
+    host: true,
+    open: true
+  }
 })
 
