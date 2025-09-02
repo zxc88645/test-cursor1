@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎮 3D轟炸機遊戲</title>
+  <script type="module" crossorigin src="./assets/index-DfLiz5d8.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index-t-nQXnJ9.css">
+</head>
+<body>
+    <div id="app"></div>
+    
+    <div id="loading" class="loading">
+        <h2>🎮 3D轟炸機遊戲</h2>
+        <p>正在載入紋理系統...</p>
+        <div class="spinner"></div>
+        <p id="loadingStatus">初始化中...</p>
+        
+        <div class="progress-container">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+        <div class="progress-text" id="progressText">0%</div>
+    </div>
+    
+    <div id="ui" class="ui-overlay hidden">
+        <h2>🎯 3D轟炸機遊戲</h2>
+        
+        <div class="controls">
+            <h3>🎮 操作控制</h3>
+            <p><strong>移動:</strong> WASD 或 方向鍵</p>
+            <p><strong>放置炸彈:</strong> 空白鍵</p>
+            <p><strong>重新開始:</strong> R 鍵</p>
+        </div>
+        
+        <div class="controls">
+            <h3>🎨 紋理系統</h3>
+            <p>✅ SVG紋理已載入</p>
+            <p>✅ 材質系統已啟用</p>
+            <p>✅ 光照效果已優化</p>
+        </div>
+    </div>
+    
+    <div id="status" class="status hidden">
+        <h3>📊 遊戲狀態</h3>
+        <div class="status-item">炸彈數量: <span id="bombCount">0</span></div>
+        <div class="status-item">方塊數量: <span id="blockCount">0</span></div>
+        <div class="status-item">FPS: <span id="fps">60</span></div>
+    </div>
+    
+    <div id="textureInfo" class="texture-info hidden">
+        <h3>🎨 紋理狀態</h3>
+        <div class="texture-list" id="textureList">
+            <!-- 紋理狀態將在這裡動態更新 -->
+        </div>
+    </div>
+
+</body>
+</html>

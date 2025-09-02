@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="512" height="512" xmlns="http://www.w3.org/2000/svg">
+    
+    <defs>
+        <pattern id="fire" patternUnits="userSpaceOnUse" width="256" height="256">
+            <defs>
+                <radialGradient id="fireGrad">
+                    <stop offset="0%" stop-color="#FFFF00"/>
+                    <stop offset="50%" stop-color="#FF4500"/>
+                    <stop offset="100%" stop-color="#8B0000"/>
+                </radialGradient>
+            </defs>
+            <ellipse cx="128" cy="128" rx="100" ry="150" fill="url(#fireGrad)"/>
+            <ellipse cx="128" cy="128" rx="60" ry="90" fill="#FFFF00"/>
+        </pattern>
+    </defs>
+    <rect width="512" height="512" fill="url(#fire)"/>
+
+</svg>

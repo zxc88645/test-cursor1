@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="512" height="512" xmlns="http://www.w3.org/2000/svg">
+    
+    <defs>
+        <pattern id="concrete" patternUnits="userSpaceOnUse" width="128" height="128">
+            <rect width="128" height="128" fill="#C0C0C0"/>
+            <rect x="0" y="0" width="128" height="4" fill="#A0A0A0"/>
+            <rect x="0" y="124" width="128" height="4" fill="#A0A0A0"/>
+            <rect x="0" y="0" width="4" height="128" fill="#A0A0A0"/>
+            <rect x="124" y="0" width="4" height="128" fill="#A0A0A0"/>
+        </pattern>
+    </defs>
+    <rect width="512" height="512" fill="url(#concrete)"/>
+
+</svg>
