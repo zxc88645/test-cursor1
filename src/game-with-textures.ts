@@ -24,6 +24,10 @@ class Bomber3DGameWithTextures {
   private _moveAccumulator: number = 0
   private loadingProgress: number = 0
   private totalLoadingSteps: number = 0
+  private cameraOffset: THREE.Vector3 = new THREE.Vector3(0, 8, 6)
+  private cameraTarget: THREE.Vector3 = new THREE.Vector3()
+  private playerTargetPosition: THREE.Vector3 = new THREE.Vector3()
+  private isMoving: boolean = false
 
   constructor(container: HTMLElement) {
     this.gridSize = 13
@@ -51,9 +55,7 @@ class Bomber3DGameWithTextures {
       0.1,
       200
     )
-    const half = (this.gridSize * this.cellSize) / 2
-    this.camera.position.set(half, half * 1.8 + 10, half + 10)
-    this.camera.lookAt(half, 0, half)
+    // Initial camera position will be set after player is created
     
     this.adjustCameraForViewport()
 
@@ -389,15 +391,33 @@ class Bomber3DGameWithTextures {
     const worldX = gx * this.cellSize - (this.gridSize * this.cellSize) / 2 + this.cellSize / 2
     const worldZ = gy * this.cellSize - (this.gridSize * this.cellSize) / 2 + this.cellSize / 2
     this.player.position.set(worldX, 0.35, worldZ)
+    this.playerTargetPosition.set(worldX, 0.35, worldZ)
+    this.updateCamera()
+  }
+
+  private setPlayerTargetPosition(gx: number, gy: number): void {
+    const worldX = gx * this.cellSize - (this.gridSize * this.cellSize) / 2 + this.cellSize / 2
+    const worldZ = gy * this.cellSize - (this.gridSize * this.cellSize) / 2 + this.cellSize / 2
+    this.playerTargetPosition.set(worldX, 0.35, worldZ)
+    this.isMoving = true
+  }
+
+  private updateCamera(): void {
+    // Smooth camera follow
+    this.cameraTarget.copy(this.player.position).add(this.cameraOffset)
+    this.camera.position.lerp(this.cameraTarget, 0.1)
+    this.camera.lookAt(this.player.position.x, this.player.position.y, this.player.position.z)
   }
 
   private tryMovePlayer(dx: number, dy: number): void {
+    if (this.isMoving) return // 防止移動中再次移動
+    
     const gx = Math.round((this.player.position.x + (this.gridSize * this.cellSize) / 2 - this.cellSize / 2) / this.cellSize)
     const gy = Math.round((this.player.position.z + (this.gridSize * this.cellSize) / 2 - this.cellSize / 2) / this.cellSize)
     const nx = THREE.MathUtils.clamp(gx + dx, 0, this.gridSize - 1)
     const ny = THREE.MathUtils.clamp(gy + dy, 0, this.gridSize - 1)
     if (!this.grid[nx][ny].occupied) {
-      this.setPlayerGridPosition(nx, ny)
+      this.setPlayerTargetPosition(nx, ny)
     }
   }
 
@@ -482,22 +502,41 @@ class Bomber3DGameWithTextures {
   }
 
   private update(delta: number): void {
-    const speed = 8 * delta
-    let dx = 0
-    let dy = 0
-    if (this.keys['w'] || this.keys['arrowup']) dy -= 1
-    if (this.keys['s'] || this.keys['arrowdown']) dy += 1
-    if (this.keys['a'] || this.keys['arrowleft']) dx -= 1
-    if (this.keys['d'] || this.keys['arrowright']) dx += 1
-    if (dx !== 0 || dy !== 0) {
-      this._moveAccumulator += speed
-      while (this._moveAccumulator >= 1) {
-        this.tryMovePlayer(dx, dy)
-        this._moveAccumulator -= 1
+    // 平滑移動玩家到目標位置
+    if (this.isMoving) {
+      const moveSpeed = 6 * delta
+      this.player.position.lerp(this.playerTargetPosition, moveSpeed)
+      
+      // 檢查是否到達目標位置
+      const distance = this.player.position.distanceTo(this.playerTargetPosition)
+      if (distance < 0.01) {
+        this.player.position.copy(this.playerTargetPosition)
+        this.isMoving = false
       }
-    } else {
-      this._moveAccumulator = 0
     }
+    
+    // 處理輸入（只在不移動時響應）
+    if (!this.isMoving) {
+      const speed = 8 * delta
+      let dx = 0
+      let dy = 0
+      if (this.keys['w'] || this.keys['arrowup']) dy -= 1
+      if (this.keys['s'] || this.keys['arrowdown']) dy += 1
+      if (this.keys['a'] || this.keys['arrowleft']) dx -= 1
+      if (this.keys['d'] || this.keys['arrowright']) dx += 1
+      if (dx !== 0 || dy !== 0) {
+        this._moveAccumulator += speed
+        while (this._moveAccumulator >= 1) {
+          this.tryMovePlayer(dx, dy)
+          this._moveAccumulator -= 1
+        }
+      } else {
+        this._moveAccumulator = 0
+      }
+    }
+
+    // Update camera to follow player smoothly
+    this.updateCamera()
 
     // Update bombs
     if (this.activeBombs.length > 0) {
